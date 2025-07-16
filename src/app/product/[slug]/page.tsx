@@ -13,18 +13,6 @@ import ProductReview from "@/app/components/productReviews";
 import SubmitReviewForm from "@/app/components/reviewForm";
 import SimilarProducts from "@/app/components/recommendation";
 
-const consumerKey = process.env.NEXT_PUBLIC_WC_KEY as string;
-const consumerSecret = process.env.NEXT_PUBLIC_WC_SECRET as string;
-const BASE_URL = process.env.NEXT_PUBLIC_WC_URL;
-
-const oauth = new OAuth({
-  consumer: { key: consumerKey, secret: consumerSecret },
-  signature_method: "HMAC-SHA1",
-  hash_function(baseString, key) {
-    return crypto.createHmac("sha1", key).update(baseString).digest("base64");
-  },
-});
-
 const ProductPage = () => {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params?.slug[0] : "";
@@ -34,16 +22,18 @@ const ProductPage = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      // const url = `${BASE_URL}/products?slug=${slug}`;
-      const url = `${BASE_URL}/products?slug=${slug}&_fields=id,name,description,regular_price,sale_price,images`;
-      const request_data = { url, method: "GET" };
-      const headers = { ...oauth.toHeader(oauth.authorize(request_data)) };
+      // const url = `${BASE_URL}/woocommerce/product/${slug}&_fields=id,name,description,regular_price,sale_price,images`;
+      // const request_data = { url, method: "GET" };
+      // const headers = { ...oauth.toHeader(oauth.authorize(request_data)) };
 
       try {
-        const res = await axios.get(url, { headers });
-        if (res.data.length > 0) {
-          setProduct(res.data[0]);
-        }
+        // const res = await axios.get(url, { headers });
+        // if (res.data.length > 0) {
+          //   setProduct(res.data[0]);
+          // }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/woocommerce/product/${slug}`);
+        const data = await res.json();
+        setProduct(data);
       } catch (err) {
         console.error("Error fetching product:", err);
       }
@@ -56,19 +46,31 @@ const ProductPage = () => {
   useEffect(() => {
       const fetchAllProducts = async () => {
           try {
-              const productListUrl = `${BASE_URL}/products`;
-              const productListRequest = { url: productListUrl, method: "GET" };
-              const productHeaders = { ...oauth.toHeader(oauth.authorize(productListRequest)) };
+              // const productListUrl = `${BASE_URL}/products`;
+              // const productListRequest = { url: productListUrl, method: "GET" };
+              // const productHeaders = { ...oauth.toHeader(oauth.authorize(productListRequest)) };
 
-              const productListRes = await axios.get(productListUrl, { headers: productHeaders });
+              // const productListRes = await axios.get(productListUrl, { headers: productHeaders });
 
-              // Extract product names (or slugs, or both)
-              const products = productListRes.data.map((p: any) => ({
+              // // Extract product names (or slugs, or both)
+              // const products = productListRes.data.map((p: any) => ({
+              //   name: p.name,
+              //   slug: p.slug,
+              //   category: p.categories?.[0]?.name || "",
+              // }));
+              // setProductList(products);
+
+              const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/woocommerce/products`);
+              if (!res.ok) throw new Error('Failed to fetch products');
+              const data = await res.json();
+
+              const products = data.map((p: any) => ({
                 name: p.name,
                 slug: p.slug,
                 category: p.categories?.[0]?.name || "",
               }));
               setProductList(products);
+
           } catch (err) {
               setProductList([]);
           }
@@ -79,13 +81,17 @@ const ProductPage = () => {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const url = `http://localhost:8080/elevate/wp-json/wc/v2/products/${product.id}/reviews`;
-      const request_data = { url, method: "GET" };
-      const headers = { ...oauth.toHeader(oauth.authorize(request_data)) };
+      // const url = `${BASE_URL2}/products/${product.id}/reviews`;
+      // const request_data = { url, method: "GET" };
+      // const headers = { ...oauth.toHeader(oauth.authorize(request_data)) };
       
       try {
-        const res = await axios.get(url, { headers });
-        setReviews(res.data);
+        // const res = await axios.get(url, { headers });
+        // setReviews(res.data);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/woocommerce/reviews/${product.id}`);
+        const data = await res.json();
+        setReviews(data);
+
       } catch (err) {
         console.error("Failed to load reviews", err);
       }
