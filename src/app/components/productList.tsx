@@ -91,13 +91,14 @@ const ProductList = ({ limit }: { limit?: number }) => {
         >
           <Link href={`/product/${product.slug}`} className="block group">
             <div className="mt-4 mx-auto rounded-lg relative w-65 h-56 bg-gray-100">
-              <img>
-                src={product.images[0]?.src || "https://via.placeholder.com/400x400?text=No+Image"}
+              <Image
+                src={product.images[0]?.src || "/placeholder.png"}
                 alt={product.name}
-                // fill
+                fill
                 sizes="20vw"
                 className="object-cover rounded-2xl transition-transform duration-200 group-hover:scale-105"
-              </img>
+              >
+              </Image>
             </div>
           </Link>
           <div className="flex flex-col flex-1 p-5">
@@ -109,7 +110,7 @@ const ProductList = ({ limit }: { limit?: number }) => {
                     id: product.id,
                     name: product.name,
                     price: product.price,
-                    image: product.images[0]?.src || "",
+                    image: product.images[0]?.src || "/placeholder.png",
                     quantity: 1,
                     stock_status: product.stock_status,
                     short_description:
