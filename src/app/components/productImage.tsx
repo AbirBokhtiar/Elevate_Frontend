@@ -34,13 +34,13 @@ const ProductImage = ({ product }: Props) => {
               className="w-24 h-24 relative cursor-pointer"
               onClick={() => setIndex(i)}
             >
-              <Image
+              <img>
                 src={img.src}
                 alt={`Thumbnail ${i}`}
                 width={100}
                 height={100}
                 className="object-cover rounded-md w-full h-full"
-              />
+              </img>
             </div>
           )
         )}
