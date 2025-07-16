@@ -89,7 +89,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.4 }}
             >
                 <Link
-                  href="/pages/list"
+                  href="/list"
                   className="relative z-50 inline-block bg-transparent border border-gray text-black px-6 py-2 mt-6 rounded-none hover:bg-violet-100 transition-colors font-medium text-bold text-black transition-colors text-sm font-medium tracking-wide"
                   aria-label="Explore the Trend collection"
                 >
