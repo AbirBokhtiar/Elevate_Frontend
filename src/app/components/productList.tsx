@@ -5,31 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import OAuth from 'oauth-1.0a';
-import crypto from "crypto";
-import Add from './add';
 import { useCart } from '../cart/cart';
-
-const consumerKey = process.env.NEXT_PUBLIC_WC_KEY as string;
-const consumerSecret = process.env.NEXT_PUBLIC_WC_SECRET as string;
-const BASE_URL = process.env.NEXT_PUBLIC_WC_URL;
-
-const oauth = new OAuth({
-  consumer: { key: consumerKey, secret: consumerSecret },
-  signature_method: "HMAC-SHA1",
-  hash_function(baseString, key) {
-    return crypto.createHmac("sha1", key).update(baseString).digest("base64");
-  },
-});
 
 const ProductList = ({ limit }: { limit?: number }) => {
     const searchParams = useSearchParams();
-    const categorySlug = searchParams?.get("cat");
-    const type = searchParams?.get("type");
-    const min = searchParams?.get("min");
-    const max = searchParams?.get("max");
-    const orderby = searchParams?.get("orderby");
-    const order = searchParams?.get("order");
     const { addToCart } = useCart();
 
     const [products, setProducts] = useState<any[]>([]);
@@ -39,63 +18,34 @@ const ProductList = ({ limit }: { limit?: number }) => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const params = new URLSearchParams();
-
-                // Fetch Category ID if categorySlug exists
-                if (categorySlug) {
-                    const categoryUrl = `${BASE_URL}/products/categories?name=${categorySlug}`;
-                    const categoryRequest = { url: categoryUrl, method: "GET" };
-                    const categoryHeaders = { ...oauth.toHeader(oauth.authorize(categoryRequest)) };
-
-                    const categoryRes = await axios.get(categoryUrl, { headers: categoryHeaders });
-
-                    // Find the category by name (case-insensitive match)
-                    const foundCategory = categoryRes.data.find(
-                        (cat: any) => cat.name.toLowerCase() === categorySlug.toLowerCase()
-                    );
-
-                    if (foundCategory?.id) {
-                        params.append("category", String(foundCategory.id));
-                    }
+                const queryParams = new URLSearchParams();
+                if (searchParams) { // Add a null check here
+                    ["cat", "type", "min", "max", "orderby", "order"].forEach(key => {
+                        const value = searchParams.get(key);
+                        if (value) {
+                            queryParams.append(key, value);
+                        }
+                    });
                 }
 
-                if (type) params.append("type", type);
-                if (min) params.append("min_price", min);
-                if (max) params.append("max_price", max);
-                if (orderby) params.append("orderby", orderby);
-                if (order) params.append("order", order);
-
-                // Fetch Products
-                // const productUrl = `${BASE_URL}/products?${params.toString()}`;
-                const productUrl = params.toString()
-                    ? `${BASE_URL}/products?${params.toString()}`
-                    : `${BASE_URL}/products`;
-                const productRequest = { url: productUrl, method: "GET" };
-                const productHeaders = { ...oauth.toHeader(oauth.authorize(productRequest)) };
-
-                const res = await axios.get(productUrl, { headers: productHeaders });
+                const res = await axios.get(`/api/products?${queryParams.toString()}`);
                 setProducts(res.data);
             } catch (err) {
                 console.error("Error fetching products:", err);
                 setProducts([]);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
-
         fetchProducts();
-    }, [categorySlug, type, min, max, searchParams]);
+    }, [searchParams]); // Add searchParams as a dependency
 
     if (loading) return <div>Loading...</div>;
-
-
 
     return (
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {(limit ? products.slice(0, limit) : products).map((product: any) => (
-                <div
-                    key={product.id}
-                    className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl duration-200"
-                >
+                <div key={product.id} className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl duration-200">
                     <Link href={`/product/${product.slug}`} className="block group">
                         <div className="mt-4 mx-auto rounded-lg relative w-65 h-56 bg-gray-100">
                             <Image
@@ -125,15 +75,16 @@ const ProductList = ({ limit }: { limit?: number }) => {
                                                 : "",
                                     })
                                 }
-                                className="flex items-center justify-center rounded-full bg-black text-white w-10 h-10 transition-all duration-200 hover:bg-red-600 group/addtocart overflow-hidden"
+                                className="flex items-center justify-center rounded-full bg-black text-white w-10 h-10 hover:bg-red-600 transition"
                                 title="Add to Cart"
-                                style={{ minWidth: '2.5rem', minHeight: '2.5rem' }}
                             >
                                 <span className="block text-xl font-bold">+</span>
                             </button>
                         </div>
 
-                        <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product.short_description?.replace(/<[^>]+>/g, '') || 'No description available.'}</p>
+                        <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                            {product.short_description?.replace(/<[^>]+>/g, '') || 'No description available.'}
+                        </p>
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-xl font-bold text-black-500">${product.price}</span>
                             <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">{product.type}</span>
@@ -145,7 +96,6 @@ const ProductList = ({ limit }: { limit?: number }) => {
                             >
                                 View Details
                             </Link>
-                            
                         </div>
                     </div>
                 </div>
