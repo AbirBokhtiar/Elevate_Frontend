@@ -16,13 +16,13 @@ const ProductImage = ({ product }: Props) => {
   return (
     <div>
       <div className="h-[500px] w-full relative mb-6">
-        <Image
+        <img
           src={images[index]?.src}
           alt={product.name}
           width={800}
           height={800}
           className="object-cover rounded-md w-full h-full"
-          priority
+          // priority
         />
       </div>
 
