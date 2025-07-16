@@ -5,17 +5,7 @@ import axios from 'axios';
 import OAuth from 'oauth-1.0a';
 import crypto from 'crypto';
 
-const consumerKey = process.env.NEXT_PUBLIC_WC_KEY as string;
-const consumerSecret = process.env.NEXT_PUBLIC_WC_SECRET as string;
-const BASE_URL = process.env.NEXT_PUBLIC_WC_URL2;
-
-const oauth = new OAuth({
-  consumer: { key: consumerKey, secret: consumerSecret },
-  signature_method: "HMAC-SHA1",
-  hash_function(baseString, key) {
-    return crypto.createHmac("sha1", key).update(baseString).digest("base64");
-  },
-});
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 type Props = {
   productId: number;
@@ -31,25 +21,14 @@ const SubmitReviewForm: React.FC<Props> = ({ productId }) => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const url = `${BASE_URL}/products/${productId}/reviews`;
-    const request_data = { url, method: 'POST' };
-    const headers = {
-      ...oauth.toHeader(oauth.authorize(request_data)),
-      'Content-Type': 'application/json',
-    };
-
     try {
-      const res = await axios.post(
-        url,
-        {
-          product_id: productId,
-          review,
-          name: name,
-          email: email,
-          rating,
-        },
-        { headers }
-      );
+      const res = await axios.post(`${BACKEND_BASE_URL}/woocommerce/reviews/${productId}`, {
+        review,
+        name,
+        email,
+        rating,
+      });
+
 
       if (res.status === 201) {
         setMessage("Review submitted successfully! Awaiting moderation.");

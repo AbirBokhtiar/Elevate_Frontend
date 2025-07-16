@@ -35,8 +35,20 @@ const Navbar = () => {
             <Link href="/">Homepage</Link>
             <Link href="/list">Shop</Link>
             <Link href="/">Deals</Link>
-            <Link href="/">About</Link>
-            <Link href="/">Contact</Link>
+            <Link href="#" onClick={() => {
+              const footerContainer = document.getElementById('footer-container');
+              if (footerContainer) {
+                footerContainer.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}>About</Link>
+
+            <Link href="#" onClick={() => {
+              const footerContainer = document.getElementById('footer-container');
+              if (footerContainer) {
+                footerContainer.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}>Contact</Link>
+
           </div>
         </div>
         {/* RIGHT */}

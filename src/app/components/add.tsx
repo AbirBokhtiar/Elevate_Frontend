@@ -3,21 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../cart/cart';
 import { useParams } from "next/navigation";
-import OAuth from "oauth-1.0a";
-import crypto from "crypto";
 import axios from "axios";
 
-const consumerKey = process.env.NEXT_PUBLIC_WC_KEY as string;
-const consumerSecret = process.env.NEXT_PUBLIC_WC_SECRET as string;
-const BASE_URL = process.env.NEXT_PUBLIC_WC_URL;
 
-const oauth = new OAuth({
-  consumer: { key: consumerKey, secret: consumerSecret },
-  signature_method: "HMAC-SHA1",
-  hash_function(baseString, key) {
-    return crypto.createHmac("sha1", key).update(baseString).digest("base64");
-  },
-});
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 const Add = ({ products }: { products: any[] }) => {
   const [quantity, setQuantity] = useState(1);
@@ -73,14 +62,10 @@ const Add = ({ products }: { products: any[] }) => {
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
-      const url = `${BASE_URL}/products?slug=${slug}`;
-      const request_data = { url, method: "GET" };
-      const headers = { ...oauth.toHeader(oauth.authorize(request_data)) };
-
       try {
-        const res = await axios.get(url, { headers });
-        if (res.data.length > 0) {
-          setProduct(res.data[0]);
+        const res = await axios.get(`${BACKEND_BASE_URL}/woocommerce/product/${slug}`);
+        if (res.data) {
+          setProduct(res.data);
         }
       } catch (err) {
         console.error("Error fetching product:", err);

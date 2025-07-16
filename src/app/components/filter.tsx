@@ -7,17 +7,7 @@ import crypto from "crypto";
 import axios from "axios";
 import { clear } from "console";
 
-const consumerKey = process.env.NEXT_PUBLIC_WC_KEY as string;
-const consumerSecret = process.env.NEXT_PUBLIC_WC_SECRET as string;
-const BASE_URL = process.env.NEXT_PUBLIC_WC_URL;
-
-const oauth = new OAuth({
-  consumer: { key: consumerKey, secret: consumerSecret },
-  signature_method: "HMAC-SHA1",
-  hash_function(baseString, key) {
-    return crypto.createHmac("sha1", key).update(baseString).digest("base64");
-  },
-});
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 const Filter = () => {
   const [categories, setCategories] = useState<any[]>([]);
@@ -31,12 +21,8 @@ const Filter = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const url = `${BASE_URL}/products/categories`;
-      const request_data = { url, method: "GET" };
-      const headers = { ...oauth.toHeader(oauth.authorize(request_data)) };
-
       try {
-        const res = await axios.get(url, { headers });
+        const res = await axios.get(`${BACKEND_BASE_URL}/woocommerce/categories`);
         const childCategories = res.data.filter(
           (cat: any) =>
             cat.parent > 0 &&
@@ -50,6 +36,7 @@ const Filter = () => {
     };
     fetchCategories();
   }, []);
+
 
  
   const getParentCategoryId = (type: string) => {

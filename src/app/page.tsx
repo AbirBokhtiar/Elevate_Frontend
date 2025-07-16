@@ -165,7 +165,7 @@ export default function Home() {
               Discover our premium collection that captures elegance and everyday edge.
             </motion.p>
             <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }}>
-              <Link href="/pages/list" className="inline-block bg-transparent border border-gray text-black px-6 py-2 rounded-none hover:bg-violet-100 transition-colors font-medium text-bold text-black transition-colors text-sm font-medium tracking-wide">
+              <Link href="/list" className="inline-block bg-transparent border border-gray text-black px-6 py-2 rounded-none hover:bg-violet-100 transition-colors font-medium text-bold text-black transition-colors text-sm font-medium tracking-wide">
                 Shop Now
               </Link>
             </motion.div>

@@ -9,19 +9,7 @@ import { getAllProducts } from '@/services/wooService';
 import OAuth from 'oauth-1.0a';
 import crypto from 'crypto';
 
-
-const consumerKey = process.env.NEXT_PUBLIC_WC_KEY as string;
-const consumerSecret = process.env.NEXT_PUBLIC_WC_SECRET as string;
-const BASE_URL = process.env.NEXT_PUBLIC_WC_URL;
-
-const oauth = new OAuth({
-  consumer: { key: consumerKey, secret: consumerSecret },
-  signature_method: "HMAC-SHA1",
-  hash_function(baseString, key) {
-    return crypto.createHmac("sha1", key).update(baseString).digest("base64");
-  },
-});
-
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 const SearchBar = () => {
     const [loading, setLoading] = useState(false);
@@ -32,11 +20,9 @@ const SearchBar = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const productListUrl = `${BASE_URL}/products`;
-                const productListRequest = { url: productListUrl, method: "GET" };
-                const productHeaders = { ...oauth.toHeader(oauth.authorize(productListRequest)) };
 
-                const productListRes = await axios.get(productListUrl, { headers: productHeaders });
+                const productListUrl = `${BACKEND_BASE_URL}/woocommerce/products`;
+                const productListRes = await axios.get(productListUrl);
 
                 // Extract product names (or slugs, or both)
                 const products = productListRes.data.map((p: any) => ({
