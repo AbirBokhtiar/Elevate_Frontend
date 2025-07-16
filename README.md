@@ -1,8 +1,7 @@
-Here's your fully polished and professional `README.md` file for the **Elevate** eCommerce platform — now with deployed links, consistent Markdown formatting, and best practices:
 
 ---
 
-````markdown
+
 # 🚀 Elevate — Full-Stack AI-Powered eCommerce Platform
 
 **Elevate** is a cutting-edge, full-stack e-commerce platform designed to deliver a seamless, AI-enhanced shopping experience. Powered by the **Model Context Protocol (MCP)**, it integrates a modern **Next.js** frontend with a robust **NestJS** backend, leveraging the **WooCommerce API** for dynamic product management and **Google Gemini AI** for intelligent customer interactions.
@@ -236,18 +235,4 @@ We welcome contributions to **Elevate**!
 🌐 Portfolio: [abirbokhtiar.com](https://abirbokhtiar.com)
 🐙 GitHub: [@AbirBokhtiar](https://github.com/AbirBokhtiar)
 
----
 
-```
-
----
-
-### ✅ Next Steps
-
-Would you like:
-- A badge section (e.g. build status, license, tech stack)?
-- Docker deployment guide?
-- Vercel + Render setup documentation?
-
-Let me know and I’ll generate it for you!
-```
